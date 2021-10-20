@@ -24,6 +24,7 @@ export default function App() {
       return;
     }
     fetchData();
+    
   },[query])
 
   const handleFormSubmit = query => {
@@ -40,8 +41,11 @@ export default function App() {
       .fetchData(query, page)
       .then((data) => {
         setData(prevState => [...prevState, ...data]);
-        setPage(prevState => prevState+1);
-
+        setPage(prevState => prevState + 1);
+        
+        if (query !== '' && data.length === 0) {
+          setShowMessage(true);
+        }
         if (page !== 1) {
           scrollOnLoadButton();
         }
@@ -49,7 +53,8 @@ export default function App() {
       .catch(error => setError( error ))
       .finally(() => {
         setIsLoading(false);
-      })
+    }
+      )
   }
 
     const scrollOnLoadButton = () => {
@@ -71,14 +76,14 @@ export default function App() {
   };
   
   const showLoadMore = data.length > 0 && data.length >= 12;
-  const message = data.length === 0 && query !== '';
+  //const message = data.length === 0 && query !== '';
     
     return (
       <div className={styles.app}>
         <Searchbar onSubmit={handleFormSubmit} />
         <ImageGallery onImageClick={handleGalleryItem} data={data} />
         {isLoading && <Loader />}
-        {message && <h2 className={styles.emptyGallery}>The gallery is empty! Try another query!</h2>}
+        {showMessage && <h2 className={styles.emptyGallery}>The gallery is empty! Try another query!</h2>}
         {showLoadMore && <Button onClick={fetchData} />}
         {showModal && <Modal onClose={toggleModal} largeImage={largeImage} />}
         {error && <h2>{error.message}</h2>}
