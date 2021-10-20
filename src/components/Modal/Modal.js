@@ -1,4 +1,5 @@
-import { Component, useEffect } from 'react';
+import { useEffect } from 'react';
+import PropTypes from 'prop-types';
 import { createPortal } from 'react-dom';
 import styles from './modal.module.css';
 
@@ -38,43 +39,10 @@ export default function Modal({ onClose, largeImage }) {
     
 }
 
-// export default class Modal extends Component {
-
-//     componentDidMount() {
-//         // console.log('Modal componentDidMount');
-//         window.addEventListener('keydown', this.handleKeydown)
-//     }
-
-//     componentWillUnmount() {
-//         // console.log('Modal componentWillUnmount');
-//         window.removeEventListener('keydown', this.handleKeydown);
-//     }
-
-//     handleKeydown = e => {
-//         if (e.code === 'Escape') {
-//             // console.log('нажали Escape');
-//             this.props.onClose();
-//         }
-//     }
-    
-//     handleOverleyClick = e => {
-//         // console.log('currentTarget', e.currentTarget);
-//         // console.log('target', e.target);
-//         if (e.currentTarget === e.target) {
-//             this.props.onClose();
-//         }
-//     }
-      
-//     render() {
-//         return createPortal(
-//             <div className={styles.modal__overley} onClick={this.handleOverleyClick}>
-//                 <div className={styles.modal}>
-//                     <img src={this.props.largeImage} alt='' /></div>
-        
-//             </div>,
-//             modalRoot);
-//     }
-// }
+Modal.propTypes = {
+    onClose: PropTypes.func,
+    largeImage: PropTypes.string,
+}
 
 
 
