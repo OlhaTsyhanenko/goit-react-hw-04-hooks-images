@@ -7,6 +7,8 @@ export const fetchData = (query = '', page = 1) => {
       }
     })
     .then(data => data.hits);
+  
 }
 
 export { fetchData as default };
+

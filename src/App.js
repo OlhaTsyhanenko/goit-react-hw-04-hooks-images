@@ -3,6 +3,7 @@ import { ToastContainer } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
 import styles from '../src/app.module.css';
 import * as dataApi from './api';
+//import dataApi from './api';
 import Modal from './components/Modal/Modal';
 import Searchbar from './components/Searchbar/Searchbar';
 import ImageGallery from './components/ImageGallery/ImageGallery';
@@ -17,36 +18,78 @@ export default function App() {
   const [page, setPage] = useState(1);
   const [largeImage, setLargeImage] = useState('');
   const [error, setError] = useState(null);
-  const [showMessage, setShowMessage] = (false);
+  const [showMessage, setShowMessage] = useState(false);
 
   useEffect(() => {
-    fetchData();
-  })
+    console.log('query',query);
+    if (query) {
+      fetchData();
+    }
+  },[query])
+
+  const handleFormSubmit = query => {
+    setQuery(query);
+    setPage(1);
+    setData([]);
+  }
 
   const fetchData = () => {
-    this.setState({ isLoading: true, showMessage: false })
-    const { query, page } = this.state;
+    setIsLoading(true);
+    setShowMessage(false);
+    
     dataApi
       .fetchData(query, page)
-      .then(data => {
-        this.setState(state => ({
-          data: [...state.data, ...data],
-          page: state.page + 1,
-        }));
+      .then((data) => {
+        setData(prevState => [...prevState, ...data]);
+        setPage(prevState => prevState+1);
+        console.log(data);
+        console.log(page);
+
         if (page !== 1) {
-          this.scrollOnLoadButton();
+          scrollOnLoadButton();
         }
-        
       })
-      .catch(error => this.setState({ error }))
+      .catch(error => setError( error ))
       .finally(() => {
-        const { data, query } = this.state;
-        this.setState({ isLoading: false })
-        if (data.length === 0 && query !== '') {
-         this.setState({showMessage: true})
-        }
+        setIsLoading(false);
       })
   }
+
+    const scrollOnLoadButton = () => {
+    window.scrollTo({
+      top: document.documentElement.scrollHeight,
+      behavior: 'smooth',
+    });
+    };
+  
+  const handleGalleryItem = fullImageUrl => {
+    setLargeImage(fullImageUrl);
+    setShowModal(true);
+  };
+
+  const toggleModal = () => {
+    setShowModal(prevState => !prevState);
+    setLargeImage('');
+    
+  };
+  
+  const showLoadMore = data.length > 0 && data.length >= 12;
+  const message = data.length === 0 && query !== '';
+  console.log(data);
+    
+    return (
+      <div className={styles.app}>
+        <Searchbar onSubmit={handleFormSubmit} />
+        <ImageGallery onImageClick={handleGalleryItem} data={data} />
+        {isLoading && <Loader />}
+        {message && <h2 className={styles.emptyGallery}>The gallery is empty! Try another query!</h2>}
+        {showLoadMore && <Button onClick={fetchData} />}
+        {showModal && <Modal onClose={toggleModal} largeImage={largeImage} />}
+        {error && <h2>{error.message}</h2>}
+        <ToastContainer autoClose={2000}/>
+    </div>  
+    )
+  
 
 }
 
